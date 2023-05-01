@@ -1,0 +1,14 @@
+"0","selectivv[[3]] %>%
+    filter(group == ""Cities"") %>%
+    mutate(apps = factor(apps, c(""Uber"", ""Bolt Driver"", ""iTaxi"", ""FREE NOW"",
+                                 ""Takeaway"", ""Wolt"", ""Glover"",  ""Bolt Courier""))) %>%
+    filter(number_of_users > 0, period == ""2020.2"")  %>% 
+    select(period, apps, region_name, number_of_users) %>%
+    spread(apps, number_of_users) %>% 
+    select(-period) %>% 
+    xtable(digits = 0) %>% 
+    print.xtable(include.rownames = F, NA.string = ""--"")
+"
+"2","Error in print.xtable(., include.rownames = F, NA.string = ""--"") : 
+  could not find function ""print.xtable""
+"

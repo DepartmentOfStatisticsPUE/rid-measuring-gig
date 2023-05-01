@@ -1,0 +1,19 @@
+"0","```r
+remotes::install_github(\"teunbrand/ggh4x\")
+
+```"
+"1","Downloading GitHub repo teunbrand/ggh4x@HEAD
+Running `R CMD build`...
+"
+"1","* checking for file ‘/private/var/folders/zs/2z4rlxv54pv7ml4jld2kccmc0000gn/T/Rtmp5suOya/remotes8bd67e3d8872/teunbrand-ggh4x-1a49ced/DESCRIPTION’ ... OK
+* preparing ‘ggh4x’:
+* checking DESCRIPTION meta-information ... OK
+* checking for LF line-endings in source and make files and shell scripts
+* checking for empty or unneeded directories
+* building ‘ggh4x_0.2.1.9000.tar.gz’
+"
+"1","* installing *source* package ‘ggh4x’ ...
+** using staged installation
+** R
+** byte-compile and prepare package for lazy loading
+"

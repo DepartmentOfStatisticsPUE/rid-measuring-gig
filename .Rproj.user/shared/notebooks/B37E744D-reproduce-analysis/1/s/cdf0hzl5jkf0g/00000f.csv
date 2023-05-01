@@ -1,0 +1,38 @@
+"0","selectivv <- list()"
+"0","selectivv[[1]] <- read_csv(file = ""data-raw/gig-table1-monthly-counts-stats.csv"")"
+"2","[1mRows: [22m[34m243[39m [1mColumns: [22m[34m4[39m"
+"2","[36m──[39m [1mColumn specification[22m [36m──────────────────────────────────────────────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m  (2): apps, category
+[32mdbl[39m  (1): number_of_users
+[34mdate[39m (1): month"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message."
+"0","selectivv[[2]] <- read_csv(file = ""data-raw/gig-table2-halfyear-demo-stats.csv"")"
+"2","[1mRows: [22m[34m630[39m [1mColumns: [22m[34m14[39m"
+"2","[36m──[39m [1mColumn specification[22m [36m──────────────────────────────────────────────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m (5): gender, age, country, apps, category
+[32mdbl[39m (9): period, n_unique_users, students, parents_of_children_0_4_years, parents_of_children_5_10_years, women_planning_a_bab..."
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message."
+"0","selectivv[[3]] <- read_csv(file = ""data-raw/gig-table3-halfyear-region-stats.csv"")"
+"2","[1mRows: [22m[34m1716[39m [1mColumns: [22m[34m6[39m"
+"2","[36m──[39m [1mColumn specification[22m [36m──────────────────────────────────────────────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m (4): group, region_name, apps, category
+[32mdbl[39m (2): period, number_of_users"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message."
+"0","selectivv[[4]] <- read_csv(file = ""data-raw/gig-table4-halfyear-activity-stats.csv"")"
+"2","[1mRows: [22m[34m328[39m [1mColumns: [22m[34m7[39m"
+"2","[36m──[39m [1mColumn specification[22m [36m──────────────────────────────────────────────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m (5): apps, day, hour, statistic, category
+[32mdbl[39m (2): period, activity_time"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message."
