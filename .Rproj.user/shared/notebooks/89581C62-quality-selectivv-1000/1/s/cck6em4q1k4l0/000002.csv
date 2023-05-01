@@ -1,0 +1,10 @@
+"0","```r
+sample1000 <- read_excel(\"dane_ankieta_profile_20220823.xlsx\") |>
+  mutate(overall=paste0(q1_a,q1_b,q1_c, q2_a, q2_b, q3_a, q3_b, q3_c, q3_d),
+         selectivv=paste0(country_PL, country_UA, country_BY, gender_women, gender_men, age_18_24, age_25_29, age_30_39, age_40+))
+
+```"
+"1","Error: unexpected ')' in:
+\"  mutate(overall=paste0(q1_a,q1_b,q1_c, q2_a, q2_b, q3_a, q3_b, q3_c, q3_d),
+         selectivv=paste0(country_PL, country_UA, country_BY, gender_women, gender_men, age_18_24, age_25_29, age_30_39, age_40+)\"
+"

@@ -1,0 +1,133 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r eval = F}
+install.packages(c("tidyverse", "scales", "ggh4x"))
+```
+
+```{r}
+library(tidyverse)
+library(scales)
+library(ggh4x)
+```
+
+## Read the data
+
+Validation data from registers and Selectivv
+
+```{r}
+valid_pesel_polish <- read_csv("data-raw/validation-pesel-register-polish.csv", show_col_types = FALSE)
+valid_pesel_ukr <- read_csv("data-raw/validation-pesel-register-ukr.csv", show_col_types = FALSE)
+valid_sel_polish <- read_csv("data-raw/validation-selectivv-polish.csv", show_col_types = FALSE)
+valid_sel_ukr <- read_csv("data-raw/validation-selectivv-ukr.csv", show_col_types = FALSE)
+valid_zus_ukr <- read_csv("data-raw/validation-zus-register-ukr.csv", show_col_types = FALSE)
+```
+
+Validation survey -- columns
+
+```{r}
+valid_survey <- read_csv("data-raw/validation-survey-1000.csv", show_col_types = F)
+```
+
+
+Self-reported values
+
++ q1_a -- Poland
++ q1_b -- Ukraine
++ q1_c -- Belarus
++ q2_a -- Female
++ q2_b -- Male
++ q3_a -- 18-24 age
++ q3_b -- 25-29 age
++ q3_c -- 30-39 age
++ q3_d -- 40+ age
+
+Selectivv classifications
+
++ gender_women -- Female
++ gender_men -- Male
++ age_18_24 -- 18-24 age
++ age_25_29 -- 25-29 age
++ age_30_39 -- 30-39 age
++ age_40+ -- 40+ age
++ country_PL -- Poland
++ country_UA -- Ukraine
++ country_BY -- Belarus
+
+
+## Reproduce results from section 5.2.1 overall
+
+Figure 3 -- Comparison of gender and age of Polish citizens according to the Population Register (PESEL) and Selectivv
+
+```{r}
+valid_pesel_polish |> 
+  add_count(period, wt = pesel, name = "total") |>
+  mutate(p_pesel = pesel / total) |>
+  select(-pesel, -total) |>
+  left_join(
+    valid_sel_polish
+  ) |>
+  rename(pesel=p_pesel, selectivv=p_sel) |> 
+  pivot_longer(cols = pesel:selectivv, names_to = "source", values_to = "share") |>
+  mutate(gender = factor(gender, c("Females", "Males")),
+         source = factor(source, c("pesel", "selectivv"), c("Population\nregister", "Selectivv"))) |>
+  ggplot(aes(x = period, y = share, 
+             linetype = source,  
+             group = interaction(source, gender),  
+             color = gender)) +
+  geom_line() +
+  #geom_point() + 
+  facet_wrap(~age, ncol = 4) + 
+  scale_y_continuous(limits = c(0, .31), labels = scales::percent, n.breaks = 10) +
+  theme_bw() +
+  scale_color_brewer(type = "qual", palette = "Set1") + 
+  labs(x = "Period", y = "Share", linetype = "Source", color = "Gender") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) -> p3
+
+ggsave(plot = p3, filename = "figures/comp-polish-gender-age.png", width = 6, height = 4)
+```
+
+
+Figure 4 -- Comparison of gender and age of Ukrainian citizens according to the Population Register (PESEL), Social Insurance Register (ZUS) and Selectivv
+
+```{r}
+valid_pesel_ukr |> 
+  add_count(period, wt = pesel, name = "total") |> 
+  mutate(p_pesel = pesel / total) |>
+  select(-pesel, -total) |>
+  left_join(
+    valid_sel_ukr
+  ) |>
+  left_join(
+    valid_zus_ukr |>
+      add_count(period, wt = zus, name = "total") |>
+      mutate(p_zus = zus/total) |>
+      select(-zus, -total) 
+  ) |>
+  rename(pesel=p_pesel, selectivv=p_sel, zus=p_zus) |> 
+  pivot_longer(cols = pesel:zus, names_to = "source", values_to = "share") |>
+  mutate(gender = factor(gender, c("Females", "Males")),
+         source = factor(source, c("pesel", "zus", "selectivv"), 
+                         c("Population\nregister", "ZUS", "Selectivv"))) |>
+  ggplot(aes(x = period, y = share, 
+             linetype = source,  
+             group = interaction(source, gender),  
+             color = gender)) +
+  geom_line() +
+  #geom_point() + 
+  facet_wrap(~age, ncol = 4) + 
+  scale_y_continuous(limits = c(0, .31), labels = scales::percent, n.breaks = 10) +
+  scale_linetype_manual(values = c(1,3,2)) + 
+  theme_bw() +
+  scale_color_brewer(type = "qual", palette = "Set1") + 
+  labs(x = "Period", y = "Share", linetype = "Source", color = "Gender") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) -> p4
+
+ggsave(plot = p4, filename = "figures/comp-ukr-gender-age.png", width = 6, height = 4)
+
+```
+

@@ -1,0 +1,15 @@
+"0","```r
+library(scales)
+
+```"
+"1","
+Attaching package: ‘scales’
+
+The following object is masked from ‘package:purrr’:
+
+    discard
+
+The following object is masked from ‘package:readr’:
+
+    col_factor
+"

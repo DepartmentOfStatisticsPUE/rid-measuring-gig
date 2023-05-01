@@ -1,0 +1,271 @@
+---
+title: "Reproduce analysis for the paper 'Measuring gig economy in Poland using mobile big data'"
+author: Mciej Beręsewicz
+format: 
+  html:
+    self-contained: true
+    table-of-contents: true
+    number-sections: true
+    df-print: kable
+editor: visual
+execute: 
+  eval: true
+  warning: false
+  message: false
+---
+
+# Packages and session info
+
+```{r eval = F}
+install.packages(c("tidyverse", "scales", "ggh4x", "ggrepel"))
+```
+
+```{r}
+library(tidyverse)
+library(scales)
+library(ggh4x)
+library(ggrepel)
+theme_set(theme_bw())
+```
+
+R version
+
+```
+R version 4.2.2 (2022-10-31)
+Platform: x86_64-apple-darwin17.0 (64-bit)
+Running under: macOS Big Sur 11.7.5
+```
+
+# Read the data
+
+Indices 
+
+```{r}
+selectivv_ind <- read_csv("data-raw/selectivv-indices.csv", show_col_types = F)
+selectivv_ind_with_zus <- read_csv("data-raw/selectivv-indices-comp-zus.csv", show_col_types = F)
+```
+
+Validation data from registers and Selectivv
+
+```{r}
+valid_pesel_polish <- read_csv("data-raw/validation-pesel-register-polish.csv", show_col_types = FALSE)
+valid_pesel_ukr <- read_csv("data-raw/validation-pesel-register-ukr.csv", show_col_types = FALSE)
+valid_sel_polish <- read_csv("data-raw/validation-selectivv-polish.csv", show_col_types = FALSE)
+valid_sel_ukr <- read_csv("data-raw/validation-selectivv-ukr.csv", show_col_types = FALSE)
+valid_zus_ukr <- read_csv("data-raw/validation-zus-register-ukr.csv", show_col_types = FALSE)
+```
+
+Validation survey 
+
+```{r}
+valid_survey <- read_csv("data-raw/validation-survey-1000.csv", show_col_types = F)
+head(valid_survey)
+```
+
+
+Self-reported values
+
++ q1_a -- Poland
++ q1_b -- Ukraine
++ q1_c -- Belarus
++ q2_a -- Female
++ q2_b -- Male
++ q3_a -- 18-24 age
++ q3_b -- 25-29 age
++ q3_c -- 30-39 age
++ q3_d -- 40+ age
+
+Selectivv classifications
+
++ gender_women -- Female
++ gender_men -- Male
++ age_18_24 -- 18-24 age
++ age_25_29 -- 25-29 age
++ age_30_39 -- 30-39 age
++ age_40 -- 40+ age
++ country_PL -- Poland
++ country_UA -- Ukraine
++ country_BY -- Belarus
+
+
+# Reproduce results
+
+## Section 'Assessment of the coverage error'
+
+Figure 1 -- Changes in the number of smartphone users based on monthly data collected by Selectivv between 2018 and 2020 (2018.01 = 100)
+
+```{r}
+selectivv_ind %>%
+  mutate(group = factor(group, c("total", "polish", "ukrainian", "other"),
+                        c("All", "Polish", "Ukrainian", "Other foreigners")),
+         label = if_else(month == max(month), paste0(as.character(group), " (", round(index), "%)"),  NA_character_),
+         label = ifelse(group == "Ukrainian" & month == max(month), 
+                        paste0(as.character(group), "\n(", round(index), "%)"), label)) %>% 
+  ggplot(data = ., aes(x = month, y = index, group = group, color = group)) + 
+  geom_line(show.legend = FALSE) +
+  scale_colour_brewer(type = "qual", palette = "Dark2", name = "Users")  +
+  geom_text_repel(aes(label = label),
+                  nudge_x = -0.25, 
+                  direction = "y", 
+                  hjust = "bottom",
+                  box.padding = .2,
+                  force = 1,
+                  na.rm = TRUE,
+                  show.legend = FALSE) +
+  labs(x = "Month", y = "Index (2018.01=100)") -> p_cov
+
+p_cov
+
+ggsave(plot = p_cov, file = "figures//fig-sel-index-total.png", width = 7, height = 4)
+
+```
+
+Figure 2 -- A~comparison of changes in the number of users according to Selectivv and the number of insured foreigners according to ZUS (2019.01 = 100). Note: ZUS (M) -- monthly statistics; ZUS (Q) -- quarterly statistics
+
+
+```{r}
+selectivv_ind_with_zus  %>%
+  mutate(group = factor(group, c("ukrainian", "other"), c("Ukraine", "Other")),
+         source = factor(source, c("selectivv", "zus", "zus (kw)"), c("Selectivv", "ZUS (M)", "ZUS (Q)")),
+         label = if_else(month == max(month), as.character(source), NA_character_)) %>%
+  ggplot(data = ., aes(x = month, y = index_new, color = source, group = source)) +
+  geom_line(show.legend = FALSE) + 
+  geom_text_repel(aes(label = label),
+                  nudge_x = -0.25, 
+                  direction = "y", 
+                  hjust = "left",
+                  box.padding = .1,
+                  force = .8,
+                  na.rm = TRUE,
+                  show.legend = FALSE) + 
+  facet_wrap(~group)  +
+  theme_bw() +
+  scale_color_brewer(type = "qual", palette = "Dark2") + 
+  labs(x = "Month", y = "Index", linetype = "Source") +
+  scale_x_date(limits = c(as.Date("2018-01-01"), as.Date("2021-09-01"))) + 
+  theme(strip.text = element_text(size = 15)) -> p1
+
+p1
+
+ggsave(plot = p1, file = "figures/fig-sel-zus.png", width = 7, height = 4)
+
+```
+
+## Section 'Assessment of the measurement error'
+
+Figure 3 -- Comparison of gender and age of Polish citizens according to the Population Register (PESEL) and Selectivv
+
+```{r}
+valid_pesel_polish |> 
+  add_count(period, wt = pesel, name = "total") |>
+  mutate(p_pesel = pesel / total) |>
+  select(-pesel, -total) |>
+  left_join(
+    valid_sel_polish
+  ) |>
+  rename(pesel=p_pesel, selectivv=p_sel) |> 
+  pivot_longer(cols = pesel:selectivv, names_to = "source", values_to = "share") |>
+  mutate(gender = factor(gender, c("Females", "Males")),
+         source = factor(source, c("pesel", "selectivv"), c("Population\nregister", "Selectivv"))) |>
+  ggplot(aes(x = period, y = share, 
+             linetype = source,  
+             group = interaction(source, gender),  
+             color = gender)) +
+  geom_line() +
+  #geom_point() + 
+  facet_wrap(~age, ncol = 4) + 
+  scale_y_continuous(limits = c(0, .31), labels = scales::percent, n.breaks = 10) +
+  scale_color_brewer(type = "qual", palette = "Set1") + 
+  labs(x = "Period", y = "Share", linetype = "Source", color = "Gender") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) -> p3
+
+p3
+
+ggsave(plot = p3, filename = "figures/comp-polish-gender-age.png", width = 6, height = 4)
+```
+
+
+Figure 4 -- Comparison of gender and age of Ukrainian citizens according to the Population Register (PESEL), Social Insurance Register (ZUS) and Selectivv
+
+```{r}
+valid_pesel_ukr |> 
+  add_count(period, wt = pesel, name = "total") |> 
+  mutate(p_pesel = pesel / total) |>
+  select(-pesel, -total) |>
+  left_join(
+    valid_sel_ukr
+  ) |>
+  left_join(
+    valid_zus_ukr |>
+      add_count(period, wt = zus, name = "total") |>
+      mutate(p_zus = zus/total) |>
+      select(-zus, -total) 
+  ) |>
+  rename(pesel=p_pesel, selectivv=p_sel, zus=p_zus) |> 
+  pivot_longer(cols = pesel:zus, names_to = "source", values_to = "share") |>
+  mutate(gender = factor(gender, c("Females", "Males")),
+         source = factor(source, c("pesel", "zus", "selectivv"), 
+                         c("Population\nregister", "ZUS", "Selectivv"))) |>
+  ggplot(aes(x = period, y = share, 
+             linetype = source,  
+             group = interaction(source, gender),  
+             color = gender)) +
+  geom_line() +
+  #geom_point() + 
+  facet_wrap(~age, ncol = 4) + 
+  scale_y_continuous(limits = c(0, .31), labels = scales::percent, n.breaks = 10) +
+  scale_linetype_manual(values = c(1,3,2)) + 
+  scale_color_brewer(type = "qual", palette = "Set1") + 
+  labs(x = "Period", y = "Share", linetype = "Source", color = "Gender") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) -> p4
+
+p4
+ggsave(plot = p4, filename = "figures/comp-ukr-gender-age.png", width = 6, height = 4)
+
+```
+
+Tables: 
+
++ Classification table for nationality
+
+```{r}
+valid_survey |>
+  mutate(country_stated = case_when(q1_a == 1 ~ "Poland",
+                                    q1_b == 1 ~ "Ukraine",
+                                    q1_c == 1 ~ "Belarus"),
+         country_class = case_when(country_PL == 1 ~ "Poland",
+                                   country_UA == 1 ~ "Ukraine",
+                                   country_BY == 1 ~ "Belarus"),
+         country_stated = factor(country_stated, c("Poland", "Ukraine", "Belarus")),
+         country_class = factor(country_class, c("Poland", "Ukraine", "Belarus"))) |>
+  xtabs(formula=~country_class + country_stated) 
+```
+
++ Classification table for gender
+
+```{r}
+valid_survey |>
+  mutate(gender_stated = case_when(q2_a == 1 ~ "Female",
+                                    q2_b == 1 ~ "Male"),
+         gender_class = case_when(gender_women == 1 ~ "Female",
+                                   gender_men == 1 ~ "Male")) |>
+  xtabs(formula=~gender_class + gender_stated) 
+```
+
++ Classification table for age groups
+
+
+```{r}
+valid_survey |>
+  mutate(age_stated = case_when(q3_a == 1 ~ "18-24",
+                                q3_b == 1 ~ "25-29",
+                                q3_c == 1 ~ "30-39",
+                                q3_d == 1 ~ "40+"),
+         age_class = case_when(age_18_24 == 1 ~ "18-24",
+                               age_25_29 == 1 ~ "25-29",
+                               age_30_39 == 1 ~ "30-39",
+                               age_40 == 1 ~ "40+")) |>
+  xtabs(formula=~age_class + age_stated) 
+```
+## Section 'Characteristics of Polish gig workers'
+
