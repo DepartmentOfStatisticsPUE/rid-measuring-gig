@@ -1,0 +1,27 @@
+{
+    "id": "2A44F3B9",
+    "path": "~/git/nauka/rid/rid-gig-economy/paper-calculations.Rmd",
+    "project_path": null,
+    "type": "r_markdown",
+    "hash": "102385104",
+    "contents": "",
+    "dirty": false,
+    "created": 1682946201051.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "chunk_output_type": "inline",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "258,43",
+        "scrollLine": "246"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1682946219,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1682946219749,
+    "read_only": false,
+    "read_only_alternatives": []
+}
