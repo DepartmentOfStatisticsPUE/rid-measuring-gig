@@ -56,9 +56,9 @@ selectivv[[4]] <- read_csv(file = "data-raw/gig-table4-halfyear-activity-stats.c
 
 LFS Data
 ```{r}
-bael <- read_csv("data-raw/bael.csv") %>%
-  na.omit() %>%
-  unite(period, year:yearhalf, sep = ".") %>%
+bael <- read_csv("data-raw/bael.csv") |>
+  na.omit() |>
+  unite(period, year:yearhalf, sep = ".") |>
   rename(region_name = nazwa_miasta)
 ```
 
@@ -125,7 +125,7 @@ selectivv_ind |>
          label = if_else(month == max(month), paste0(as.character(group), " (", round(index), "%)"),  NA_character_),
          label = ifelse(group == "Ukrainian" & month == max(month), 
                         paste0(as.character(group), "\n(", round(index), "%)"), label)) |> 
-  ggplot(data = ., aes(x = month, y = index, group = group, color = group)) + 
+  ggplot(data = _, aes(x = month, y = index, group = group, color = group)) + 
   geom_line(show.legend = FALSE) +
   scale_colour_brewer(type = "qual", palette = "Dark2", name = "Users")  +
   geom_text_repel(aes(label = label),
@@ -152,7 +152,7 @@ selectivv_ind_with_zus  |>
   mutate(group = factor(group, c("ukrainian", "other"), c("Ukraine", "Other")),
          source = factor(source, c("selectivv", "zus", "zus (kw)"), c("Selectivv", "ZUS (M)", "ZUS (Q)")),
          label = if_else(month == max(month), as.character(source), NA_character_)) |>
-  ggplot(data = ., aes(x = month, y = index_new, color = source, group = source)) +
+  ggplot(data = _, aes(x = month, y = index_new, color = source, group = source)) +
   geom_line(show.legend = FALSE) + 
   geom_text_repel(aes(label = label),
                   nudge_x = -0.25, 
@@ -328,23 +328,23 @@ Figure -- Change in the number of active users in Poland for selected apps by ty
 
 
 ```{r}
-selectivv[[3]] %>%
-  count(category, apps, group, period, wt = number_of_users) %>%
-  spread(group, n) %>%
+selectivv[[3]] |>
+  count(category, apps, group, period, wt = number_of_users) |>
+  spread(group, n) |>
   mutate(fua = `Functional area` - Cities, 
-         woj = Voivodeship - `Functional area`) %>%
-  select(category, apps, period, cities = Cities, fua, woj) %>%
-  gather(geo, val, -apps, -period, -category) %>%
+         woj = Voivodeship - `Functional area`) |>
+  select(category, apps, period, cities = Cities, fua, woj) |>
+  gather(geo, val, -apps, -period, -category) |>
   mutate(geo = factor(geo, c("cities", "fua", "woj"),
                       c("Cities", "Functional UAs", "Provinces")),
          category = ifelse(apps == "Uber", "Uber & Uber Eats", category),
-         category  = factor(category, c("Transportation", "Delivery", "Uber & Uber Eats"))) %>%
-  group_by(apps, geo) %>%
+         category  = factor(category, c("Transportation", "Delivery", "Uber & Uber Eats"))) |>
+  group_by(apps, geo) |>
   mutate(index = val/val[1],
          diff = val-val[1],
          apps = factor(apps, c("Uber", "Bolt Driver", "iTaxi", "FREE NOW",
-                               "Takeaway", "Wolt", "Glover",  "Bolt Courier"))) %>%
-  ggplot(data = ., aes(x = as.factor(period), y = diff/1000, group = apps, color = apps)) +
+                               "Takeaway", "Wolt", "Glover",  "Bolt Courier"))) |>
+  ggplot(data = _, aes(x = as.factor(period), y = diff/1000, group = apps, color = apps)) +
   geom_line() +
   geom_point() + 
   scale_color_brewer(type = "qual", palette = "Dark2") +  
@@ -366,13 +366,13 @@ ggsave(plot = p1b, file = "figures/fig-sel-diff-hy.png", width = 8, height = 5)
 Figure -- The monthly number of active users of selected apps in Poland by country, age and gender between 2018 and 2020
 
 ```{r}
-selectivv[[2]] %>%
+selectivv[[2]] |>
   mutate(apps = factor(apps, c("Uber", "Bolt Driver", "iTaxi", "FREE NOW",
                                "Takeaway", "Wolt", "Glover",  "Bolt Courier")),
          category = ifelse(apps == "Uber", "Uber &\n Uber Eats", category),
-         category  = factor(category, c("Uber &\n Uber Eats", "Transportation", "Delivery"))) %>%
-  count(category, apps, country, period, wt = n_unique_users) %>%  
-  ggplot(data = ., aes(x = as.character(period), y = n/1000, group = country, color = country)) +
+         category  = factor(category, c("Uber &\n Uber Eats", "Transportation", "Delivery"))) |>
+  count(category, apps, country, period, wt = n_unique_users) |>  
+  ggplot(data = _, aes(x = as.character(period), y = n/1000, group = country, color = country)) +
   geom_line() +
   geom_point() + 
   scale_color_brewer(type = "qual", palette = "Dark2") +  
@@ -387,13 +387,13 @@ ggsave(plot = p2a, file = "figures/fig-sel-half-country.png", width = 8, height 
 ```
 
 ```{r}
-selectivv[[2]]  %>%
+selectivv[[2]]  |>
   mutate(apps = factor(apps, c("Uber", "Bolt Driver", "iTaxi", "FREE NOW",
                                "Takeaway", "Wolt", "Glover",  "Bolt Courier")),
          category = ifelse(apps == "Uber", "Uber &\n Uber Eats", category),
-         category  = factor(category, c("Uber &\n Uber Eats", "Transportation", "Delivery"))) %>%
-  count(category, apps, age, period, wt = n_unique_users) %>%
-  ggplot(data = ., aes(x = as.character(period), y = n/1000, group = age, color = age)) +
+         category  = factor(category, c("Uber &\n Uber Eats", "Transportation", "Delivery"))) |>
+  count(category, apps, age, period, wt = n_unique_users) |>
+  ggplot(data = _, aes(x = as.character(period), y = n/1000, group = age, color = age)) +
   geom_line() +
   geom_point() + 
   scale_color_brewer(type = "qual", palette = "Dark2") +  
@@ -411,13 +411,13 @@ ggsave(plot = p2b, file = "figures/fig-sel-half-age.png", width = 8, height = 4)
 
 
 ```{r}
-selectivv[[2]]  %>%
+selectivv[[2]]  |>
   mutate(apps = factor(apps, c("Uber", "Bolt Driver", "iTaxi", "FREE NOW",
                                "Takeaway", "Wolt", "Glover",  "Bolt Courier")),
          category = ifelse(apps == "Uber", "Uber &\n Uber Eats", category),
-         category  = factor(category, c("Uber &\n Uber Eats", "Transportation", "Delivery"))) %>%
-  count(category, apps, gender, period, wt = n_unique_users)  %>%
-  ggplot(data = ., aes(x = as.character(period), y = n/1000, group = gender, color = gender)) +
+         category  = factor(category, c("Uber &\n Uber Eats", "Transportation", "Delivery"))) |>
+  count(category, apps, gender, period, wt = n_unique_users)  |>
+  ggplot(data = _, aes(x = as.character(period), y = n/1000, group = gender, color = gender)) +
   geom_line() +
   geom_point() + 
   scale_color_brewer(type = "qual", palette = "Dark2") +  
@@ -435,28 +435,28 @@ ggsave(plot = p2c, file = "figures/fig-sel-half-sex.png", width = 8, height = 4)
 Figure -- Point and 95\% interval of ratio of the number of active users and the LFS working 18--65 population by app for 2020HY1. Note that Y axis differs between the apps
 
 ```{r}
-selectivv[[3]]  %>%
-    filter(group == "Cities")  %>%
-    mutate(period = as.character(period)) %>%
-    select(category, period, region_name, apps, number_of_users) %>%
+selectivv[[3]]  |>
+    filter(group == "Cities")  |>
+    mutate(period = as.character(period)) |>
+    select(category, period, region_name, apps, number_of_users) |>
     left_join(
-      bael %>%
+      bael |>
         mutate(region_name = str_remove(region_name, "M. "))
-    ) %>%
+    ) |>
     filter(number_of_users > 0 ) -> cities_bael
 ```
 
 
 ```{r}
-cities_bael %>%
-  filter(region_name != "Sopot", period == "2020.1") %>%
-  filter(!is.na(y))  %>%
+cities_bael |>
+  filter(region_name != "Sopot", period == "2020.1") |>
+  filter(!is.na(y))  |>
   mutate(share = number_of_users/y*100,
          share_hi = number_of_users / (y - 1.96*rmse)*100,
-         share_lo = number_of_users / (y + 1.96*rmse)*100) %>%
+         share_lo = number_of_users / (y + 1.96*rmse)*100) |>
   mutate(apps = factor(apps, c("Uber", "Bolt Driver", "iTaxi", "FREE NOW",
-                               "Takeaway", "Wolt", "Glover",  "Bolt Courier"))) %>%
-  ggplot(data = ., aes(x = reorder(region_name, -y), y = share, ymin = share_lo, ymax = share_hi)) +
+                               "Takeaway", "Wolt", "Glover",  "Bolt Courier"))) |>
+  ggplot(data = _, aes(x = reorder(region_name, -y), y = share, ymin = share_lo, ymax = share_hi)) +
   geom_errorbar() +
   geom_point()  +
   facet_wrap(~apps, ncol = 4, scale = "free_y") +
@@ -474,15 +474,15 @@ Figure -- Average and standard deviation (Std. Dev.) of activity time by app typ
 
 
 ```{r}
-selectivv[[4]] %>%
+selectivv[[4]] |>
   mutate(category = ifelse(apps == "Uber", "Uber & Uber Eats", category),
          category  = factor(category, c( "Uber & Uber Eats", "Transportation", "Delivery")),
          apps = factor(apps, c("Uber", "Bolt Driver", "iTaxi", "FREE NOW",
                                "Takeaway", "Wolt", "Glover",  "Bolt Courier")),
          day = factor(day, c("Mondays-Thursdays", "Fridays-Sundays")),
          hour = str_replace(hour, "day", "daytime"),
-         hour = str_replace(hour, "night", "nightime"))  %>%
-  ggplot(data = ., aes(x = as.character(period), y = activity_time, color = apps, group = apps)) +
+         hour = str_replace(hour, "night", "nightime"))  |>
+  ggplot(data = _, aes(x = as.character(period), y = activity_time, color = apps, group = apps)) +
   geom_line() +
   geom_point() + 
   facet_nested(day ~ category +  hour + statistic)  +
@@ -505,15 +505,15 @@ ggsave(plot = p4, file = "figures/fig-sel-half-time-dev.png", width = 8, height 
 Table  Number of active users in cities for 2020HY2
 
 ```{r}
-selectivv[[3]] %>%
-    filter(group == "Cities") %>%
+selectivv[[3]] |>
+    filter(group == "Cities") |>
     mutate(apps = factor(apps, c("Uber", "Bolt Driver", "iTaxi", "FREE NOW",
-                                 "Takeaway", "Wolt", "Glover",  "Bolt Courier"))) %>%
-    filter(number_of_users > 0, period == "2020.2")  %>% 
-    select(period, apps, region_name, number_of_users) %>%
-    spread(apps, number_of_users) %>% 
-    select(-period) %>% 
-    xtable(digits = 0) %>% 
+                                 "Takeaway", "Wolt", "Glover",  "Bolt Courier"))) |>
+    filter(number_of_users > 0, period == "2020.2")  |> 
+    select(period, apps, region_name, number_of_users) |>
+    spread(apps, number_of_users) |> 
+    select(-period) |> 
+    xtable(digits = 0) |> 
     print.xtable(include.rownames = F, NA.string = "--")
 ```
 
@@ -521,55 +521,55 @@ selectivv[[3]] %>%
 Table  -- Direct estimates, its standard errors (in thousands) and sample sizes of the working population size (18--64) based on the Labour Force Survey between 2018HY1 and 2020HY
 
 ```{r}
-bael %>%
-  filter(period == "2018.1")  %>% 
+bael |>
+  filter(period == "2018.1")  |> 
   mutate(region_name = str_remove(region_name, "M. "),
          y = y / 1000,
          rmse = rmse / 1000,
-         cv = rmse/y*100) %>%
-  select(region_name, size = y, std = rmse, sample = n) %>%
+         cv = rmse/y*100) |>
+  select(region_name, size = y, std = rmse, sample = n) |>
   left_join(
-    bael %>%
-    filter(period == "2018.2")  %>% 
+    bael |>
+    filter(period == "2018.2")  |> 
     mutate(region_name = str_remove(region_name, "M. "),
          y = y / 1000,
          rmse = rmse / 1000,
-         cv = rmse/y*100) %>%
+         cv = rmse/y*100) |>
     select(region_name, size = y, std = rmse, sample = n),
     by = "region_name"
-  ) %>%
+  ) |>
   left_join(
-    bael %>%
-    filter(period == "2019.1")  %>% 
+    bael |>
+    filter(period == "2019.1")  |> 
     mutate(region_name = str_remove(region_name, "M. "),
          y = y / 1000,
          rmse = rmse / 1000,
-         cv = rmse/y*100) %>%
+         cv = rmse/y*100) |>
     select(region_name, size = y, std = rmse, sample = n),
     by = "region_name"
-  )  %>%
+  )  |>
   left_join(
-    bael %>%
-    filter(period == "2019.2")  %>% 
+    bael |>
+    filter(period == "2019.2")  |> 
     mutate(region_name = str_remove(region_name, "M. "),
          y = y / 1000,
          rmse = rmse / 1000,
-         cv = rmse/y*100) %>%
+         cv = rmse/y*100) |>
     select(region_name, size = y, std = rmse, sample = n),
     by = "region_name"
-  )  %>%
+  )  |>
   left_join(
-    bael %>%
-    filter(period == "2020.1")  %>% 
+    bael |>
+    filter(period == "2020.1")  |> 
     mutate(region_name = str_remove(region_name, "M. "),
          y = y / 1000,
          rmse = rmse / 1000,
-         cv = rmse/y*100) %>%
+         cv = rmse/y*100) |>
     select(region_name, size = y, std = rmse, sample = n),
     by = "region_name"
-  )  %>%
-  mutate_at(vars(starts_with("sample")), as.integer) %>%
-  xtable(digits = 1) %>%
+  )  |>
+  mutate_at(vars(starts_with("sample")), as.integer) |>
+  xtable(digits = 1) |>
   print.xtable(include.rownames = F)
   
 ```
