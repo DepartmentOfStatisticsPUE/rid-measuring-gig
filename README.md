@@ -13,8 +13,10 @@ The structure of the repo is as follows:
 
 + `data-raw/` -- folder with data for the paper
 + `figures/` -- figures prepared for the paper
-+ `reproduce-analysis.qmd` -- R quarto notebook with codes to reproduce plots and some tables ([compiled version](https://htmlpreview.github.io/?https://github.com/DepartmentOfStatisticsPUE/rid-measuring-gig/reproduce-analysis.html))
++ `reproduce-analysis.qmd` -- R quarto notebook with codes to reproduce plots and some tables ([compiled version](https://htmlpreview.github.io/?https://github.com/DepartmentOfStatisticsPUE/rid-measuring-gig/blob/main/reproduce-analysis.html))
 + `paper/rid_measuring.pdf` -- the main paper (submitted version)
+
+
 
 ## How to cite
 
