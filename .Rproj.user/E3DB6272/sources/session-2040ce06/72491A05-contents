@@ -17,7 +17,7 @@ execute:
 # Packages and session info
 
 ```{r eval = F}
-install.packages(c("tidyverse", "scales", "ggh4x", "ggrepel"))
+install.packages(c("tidyverse", "scales", "ggh4x", "ggrepel", "xtable"))
 ```
 
 ```{r}
@@ -25,6 +25,7 @@ library(tidyverse)
 library(scales)
 library(ggh4x)
 library(ggrepel)
+library(xtable)
 theme_set(theme_bw())
 ```
 
@@ -501,3 +502,74 @@ ggsave(plot = p4, file = "figures/fig-sel-half-time-dev.png", width = 8, height 
 # Supplementary materials
 
 
+Table  Number of active users in cities for 2020HY2
+
+```{r}
+selectivv[[3]] %>%
+    filter(group == "Cities") %>%
+    mutate(apps = factor(apps, c("Uber", "Bolt Driver", "iTaxi", "FREE NOW",
+                                 "Takeaway", "Wolt", "Glover",  "Bolt Courier"))) %>%
+    filter(number_of_users > 0, period == "2020.2")  %>% 
+    select(period, apps, region_name, number_of_users) %>%
+    spread(apps, number_of_users) %>% 
+    select(-period) %>% 
+    xtable(digits = 0) %>% 
+    print.xtable(include.rownames = F, NA.string = "--")
+```
+
+
+Table  -- Direct estimates, its standard errors (in thousands) and sample sizes of the working population size (18--64) based on the Labour Force Survey between 2018HY1 and 2020HY
+
+```{r}
+bael %>%
+  filter(period == "2018.1")  %>% 
+  mutate(region_name = str_remove(region_name, "M. "),
+         y = y / 1000,
+         rmse = rmse / 1000,
+         cv = rmse/y*100) %>%
+  select(region_name, size = y, std = rmse, sample = n) %>%
+  left_join(
+    bael %>%
+    filter(period == "2018.2")  %>% 
+    mutate(region_name = str_remove(region_name, "M. "),
+         y = y / 1000,
+         rmse = rmse / 1000,
+         cv = rmse/y*100) %>%
+    select(region_name, size = y, std = rmse, sample = n),
+    by = "region_name"
+  ) %>%
+  left_join(
+    bael %>%
+    filter(period == "2019.1")  %>% 
+    mutate(region_name = str_remove(region_name, "M. "),
+         y = y / 1000,
+         rmse = rmse / 1000,
+         cv = rmse/y*100) %>%
+    select(region_name, size = y, std = rmse, sample = n),
+    by = "region_name"
+  )  %>%
+  left_join(
+    bael %>%
+    filter(period == "2019.2")  %>% 
+    mutate(region_name = str_remove(region_name, "M. "),
+         y = y / 1000,
+         rmse = rmse / 1000,
+         cv = rmse/y*100) %>%
+    select(region_name, size = y, std = rmse, sample = n),
+    by = "region_name"
+  )  %>%
+  left_join(
+    bael %>%
+    filter(period == "2020.1")  %>% 
+    mutate(region_name = str_remove(region_name, "M. "),
+         y = y / 1000,
+         rmse = rmse / 1000,
+         cv = rmse/y*100) %>%
+    select(region_name, size = y, std = rmse, sample = n),
+    by = "region_name"
+  )  %>%
+  mutate_at(vars(starts_with("sample")), as.integer) %>%
+  xtable(digits = 1) %>%
+  print.xtable(include.rownames = F)
+  
+```

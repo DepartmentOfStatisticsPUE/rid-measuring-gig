@@ -1,0 +1,42 @@
+"0","selectivv[[3]] %>%"
+"0","    filter(group == ""Cities"") %>%"
+"0","    mutate(apps = factor(apps, c(""Uber"", ""Bolt Driver"", ""iTaxi"", ""FREE NOW"","
+"0","                                 ""Takeaway"", ""Wolt"", ""Glover"",  ""Bolt Courier""))) %>%"
+"0","    filter(number_of_users > 0, period == ""2020.2"")  %>% "
+"0","    select(period, apps, region_name, number_of_users) %>%"
+"0","    spread(apps, number_of_users) %>% "
+"0","    select(-period) %>% "
+"0","    xtable(digits = 0) %>% "
+"0","    print.xtable(include.rownames = F, NA.string = ""--"")"
+"1","% latex table generated in R 4.2.2 by xtable 1.8-4 package
+% Mon May  1 15:24:26 2023
+\begin{table}[ht]
+\centering
+\begin{tabular}{lrrrrrrrr}
+  \hline
+region\_name & Uber & Bolt Driver & iTaxi & FREE NOW & Takeaway & Wolt & Glover & Bolt Courier \\ 
+  \hline
+Białystok & -- & -- & 96 & -- & 630 & 205 & 56 & 24 \\ 
+  Bydgoszcz & -- & 274 & 178 & -- & 297 & 101 & 71 & 12 \\ 
+  Gdańsk & 472 & 542 & 104 & 450 & 778 & 156 & 170 & 32 \\ 
+  Gdynia & 479 & 401 & 373 & 120 & 245 & 48 & 53 & 10 \\ 
+  Gorzów Wielkopolski & -- & -- & 178 & -- & 311 & 27 & 15 & 5 \\ 
+  Katowice & 1578 & -- & 482 & -- & 558 & 106 & 121 & 21 \\ 
+  Kielce & -- & -- & 12 & -- & 442 & 75 & 65 & 18 \\ 
+  Kraków & 6808 & 4166 & 994 & 1219 & 1619 & 792 & 893 & 170 \\ 
+  Łódź & 1762 & 793 & 405 & 230 & 908 & 140 & 261 & 33 \\ 
+  Lublin & -- & -- & 344 & -- & 958 & 226 & 187 & 18 \\ 
+  Olsztyn & -- & -- & 190 & -- & 533 & 90 & 122 & 20 \\ 
+  Opole & -- & -- & 310 & -- & 912 & 238 & 204 & 30 \\ 
+  Poznań & 835 & 701 & 506 & 64 & 1288 & 350 & 410 & 62 \\ 
+  Rzeszów & -- & -- & 41 & -- & 459 & 169 & 36 & 22 \\ 
+  Sopot & 80 & 249 & 179 & 35 & 196 & 38 & 42 & 8 \\ 
+  Szczecin & -- & -- & 461 & -- & 387 & 52 & 254 & 55 \\ 
+  Toruń & -- & 336 & 370 & -- & 276 & 94 & 66 & 11 \\ 
+  Warszawa & 12637 & 7799 & 3692 & 2954 & 1878 & 1956 & 2358 & 533 \\ 
+  Wrocław & 3217 & 1617 & 931 & 620 & 540 & 165 & 505 & 78 \\ 
+  Zielona Góra & -- & -- & 178 & -- & 348 & 32 & 17 & 6 \\ 
+   \hline
+\end{tabular}
+\end{table}
+"
