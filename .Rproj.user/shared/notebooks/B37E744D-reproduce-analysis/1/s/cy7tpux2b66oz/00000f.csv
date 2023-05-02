@@ -1,0 +1,5 @@
+"0","selectivv <- list()"
+"0","selectivv[[1]] <- read_csv(file = ""data-raw/gig-table1-monthly-counts-stats.csv"", show_col_types = F)"
+"0","selectivv[[2]] <- read_csv(file = ""data-raw/gig-table2-halfyear-demo-stats.csv"", show_col_types = F)"
+"0","selectivv[[3]] <- read_csv(file = ""data-raw/gig-table3-halfyear-region-stats.csv"", show_col_types = F)"
+"0","selectivv[[4]] <- read_csv(file = ""data-raw/gig-table4-halfyear-activity-stats.csv"", show_col_types = F)"

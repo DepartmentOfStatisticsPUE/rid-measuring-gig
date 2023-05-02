@@ -1,0 +1,2 @@
+"0","selectivv_ind <- read_csv(""data-raw/selectivv-indices.csv"", show_col_types = F)"
+"0","selectivv_ind_with_zus <- read_csv(""data-raw/selectivv-indices-comp-zus.csv"", show_col_types = F)"
